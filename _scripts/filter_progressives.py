@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from _scripts.metadata import *
 
 def euclidean(x1, y1, x2, y2):
@@ -10,8 +9,7 @@ def euclidean(x1, y1, x2, y2):
 # having to parse the input data again (worth fixing in the future)
 def exclude_corners(passes):
     thr = 2
-    corners = passes[(passes[start_x_key] > field_length-thr) & ((passes[start_y_key] > field_width-thr) | (passes[start_y_key] < thr))]
-    return pd.concat([passes, corners]).drop_duplicates(keep=False)
+    return passes[(passes[start_x_key] <= field_length-thr) | ((passes[start_y_key] <= field_width-thr) & (passes[start_y_key] >= thr))]
 
 
 def filter_progressives(df):
