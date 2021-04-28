@@ -1,11 +1,22 @@
 import numpy as np
+import pandas as pd
 from _scripts.metadata import *
 
 def euclidean(x1, y1, x2, y2):
-    return np.sqrt(np.power((x1-x2), 2) + np.power((1-y2), 2))
+    return np.sqrt(np.power((x1-x2), 2) + np.power((y1-y2), 2))
+
+
+# doing this by coordinates and not a proper event type/qualifier is a workaround for my laziness and not
+# having to parse the input data again (worth fixing in a future)
+def exclude_corners(passes):
+    thr = 2
+    corners = passes[(passes[start_x_key] > field_length-thr) & ((passes[start_y_key] > field_width-thr) | (passes[start_y_key] < thr))]
+    return pd.concat([passes, corners]).drop_duplicates(keep=False)
 
 
 def filter_progressives(df):
+    df = exclude_corners(df)
+
     df.loc[:, start_goal_dist_key] = euclidean(
         df[start_x_key], df[start_y_key],
         field_length, field_width/2
